@@ -1,0 +1,75 @@
+{
+  "name": "phone-keyboard",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Type into your laptop's browser from your phone over local WiFi. Built to help one-handed laptop use.",
+  "type": "commonjs",
+  "author": {
+    "name": "Wojciech Wlodarczyk",
+    "email": "wlodarczyk.woj@gmail.com"
+  },
+  "homepage": "https://github.com/wojciech/phone-keyboard",
+  "main": "app/main.js",
+  "bin": {
+    "phone-keyboard": "server/index.js"
+  },
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "node --watch server/index.js",
+    "app": "electron .",
+    "dist": "electron-builder",
+    "dist:mac": "electron-builder --mac",
+    "dist:mac-zip": "electron-builder --mac zip",
+    "dist:mac-universal": "electron-builder --mac zip --universal",
+    "dist:linux": "electron-builder --linux",
+    "test": "node server/relay.test.js",
+    "icons": "node extension/icons/generate-icons.js"
+  },
+  "dependencies": {
+    "qrcode": "^1.5.4",
+    "qrcode-terminal": "^0.12.0",
+    "ws": "^8.18.0"
+  },
+  "devDependencies": {
+    "electron": "^31.0.0",
+    "electron-builder": "^24.13.3"
+  },
+  "build": {
+    "appId": "com.phonekeyboard.app",
+    "productName": "PhoneKeyboard",
+    "files": [
+      "app/**/*",
+      "server/**/*",
+      "shared/**/*",
+      "mobile/**/*",
+      "!server/.pk-config.json",
+      "!server/*.test.js",
+      "!**/*.map"
+    ],
+    "directories": {
+      "buildResources": "app/assets",
+      "output": "dist"
+    },
+    "mac": {
+      "category": "public.app-category.productivity",
+      "target": ["dmg"],
+      "icon": "app/assets/icon.png",
+      "extendInfo": {
+        "CFBundleDisplayName": "Phone Keyboard"
+      }
+    },
+    "linux": {
+      "category": "Utility",
+      "target": ["AppImage", "deb"],
+      "maintainer": "Wojciech Wlodarczyk <wlodarczyk.woj@gmail.com>",
+      "executableName": "phone-keyboard",
+      "icon": "app/assets/icon.png",
+      "desktop": {
+        "Name": "Phone Keyboard"
+      }
+    }
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

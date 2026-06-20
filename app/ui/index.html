@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'">
+  <title>Phone Keyboard</title>
+  <link rel="stylesheet" href="ui.css">
+</head>
+<body>
+  <header class="top">
+    <div class="logo"><span class="ico"></span></div>
+    <div>
+      <h1>Phone Keyboard</h1>
+      <p class="tag">Type into this computer from your phone</p>
+    </div>
+  </header>
+
+  <section class="card status-card">
+    <div class="status">
+      <span class="dot" id="dot"></span>
+      <span id="stext">Stopped</span>
+      <small id="conn"></small>
+    </div>
+    <div class="portrow">
+      <label for="port">Port</label>
+      <input type="number" id="port" value="8787" min="1" max="65535">
+      <button id="toggle" class="btn">Start</button>
+    </div>
+    <div class="msg" id="msg"></div>
+  </section>
+
+  <section class="card qr-card" id="qrCard" hidden>
+    <p class="qr-title">Scan with your phone</p>
+    <div class="qr-wrap"><img id="qr" alt="QR code" /></div>
+    <p class="hint">Phone must be on the same WiFi.</p>
+    <div class="urlrow">
+      <code id="url"></code>
+      <button id="copy" class="btn ghost" title="Copy">Copy</button>
+    </div>
+  </section>
+
+  <section class="card steps" id="steps">
+    <p class="steps-title">How to use</p>
+    <ol>
+      <li>Click <b>Start</b> above.</li>
+      <li>Scan the QR code with your phone's camera.</li>
+      <li>In Chrome here, load the <b>Phone Keyboard</b> extension (once).</li>
+      <li>Click any text box on screen, then type from your phone.</li>
+    </ol>
+  </section>
+
+  <section class="card logs-card">
+    <button class="logs-toggle" id="logsToggle">Technical details ▾</button>
+    <div class="logs-body" id="logsBody" hidden>
+      <div class="logs-actions">
+        <button id="openLogs" class="btn ghost" disabled>Open logs in browser</button>
+        <button id="resetToken" class="btn ghost">Reset token</button>
+      </div>
+      <pre id="logs" class="logs"></pre>
+    </div>
+  </section>
+
+  <script src="ui.js"></script>
+</body>
+</html>

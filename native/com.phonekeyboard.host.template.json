@@ -1,0 +1,9 @@
+{
+  "name": "com.phonekeyboard.host",
+  "description": "Phone Keyboard native host (start/stop the local relay server)",
+  "path": "__HOST_PATH__",
+  "type": "stdio",
+  "allowed_origins": [
+    "chrome-extension://__EXTENSION_ID__/"
+  ]
+}

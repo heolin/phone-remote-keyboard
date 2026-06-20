@@ -1,0 +1,6 @@
+node_modules/
+*.log
+.DS_Store
+native/com.phonekeyboard.host.json
+server/.pk-config.json
+dist/

@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <style>
+    :root { color-scheme: light; }
+    * { box-sizing: border-box; }
+    body {
+      width: 280px; margin: 0; padding: 16px;
+      font: 14px/1.45 system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      color: #20223a; background: #fff;
+    }
+    h1 { font-size: 15px; margin: 0 0 12px; display:flex; align-items:center; gap:8px; }
+    h1 .logo { width:30px; height:30px; border-radius:9px; border:1px solid #dfecff;
+               background: radial-gradient(circle at 50% 35%, #8fbcff 0%, #4a8df0 100%);
+               display:grid; place-items:center; }
+    h1 .logo .ico { width:18px; height:18px; background-color:#fff;
+                    -webkit-mask:url(../icons/keyboard.png) center/contain no-repeat;
+                    mask:url(../icons/keyboard.png) center/contain no-repeat; }
+    .status { display:flex; align-items:center; gap:8px; padding:8px 10px; border-radius:10px;
+              background:#f4f5fb; margin-bottom:12px; }
+    .dot { width:10px; height:10px; border-radius:50%; background:var(--c,#f6c945);
+           box-shadow:0 0 0 4px color-mix(in srgb, var(--c,#f6c945) 25%, transparent); transition: background .2s; }
+    .status small { color:#6b7088; margin-left:auto; }
+    label { display:block; font-size:12px; color:#6b7088; margin:8px 0 3px; }
+    input { width:100%; padding:8px 10px; border:1px solid #e2e4ee; border-radius:9px; font-size:14px; outline:none; }
+    input:focus { border-color:#7c5cff; }
+    .grid2 { display:grid; grid-template-columns:1fr 84px; gap:8px; }
+    .row { display:flex; gap:8px; margin-top:12px; }
+    button { flex:1; border:0; border-radius:10px; padding:9px 10px; font-size:13px; font-weight:600; cursor:pointer; color:#fff; transition: filter .12s, transform .06s; }
+    button:active { transform: scale(.97); }
+    button:hover { filter: brightness(1.05); }
+    .b-primary { background: linear-gradient(135deg,#7c5cff,#5b8def); }
+    .b-soft { background:#edeefc; color:#5b5fc7; }
+    .b-warn { background:#fff3f3; color:#d6455d; }
+    .phone { margin-top:12px; padding:10px; border-radius:10px; background:#f4f5fb; font-size:12px; word-break:break-all; }
+    .phone a { color:#5b8def; cursor:pointer; }
+    .msg { margin-top:10px; font-size:12px; color:#6b7088; min-height:14px; }
+    .msg.err { color:#d6455d; }
+    .hint { font-size:11px; color:#9aa0b4; margin-top:10px; }
+  </style>
+</head>
+<body>
+  <h1><span class="logo"><span class="ico"></span></span> Phone Keyboard</h1>
+  <div class="status">
+    <span class="dot" id="dot"></span><span id="stext">Disconnected</span><small id="pcount"></small>
+  </div>
+
+  <label>Server address</label>
+  <div class="grid2">
+    <input type="text" id="host" placeholder="127.0.0.1">
+    <input type="number" id="port" placeholder="8787">
+  </div>
+  <label>Token (only if server is on another machine)</label>
+  <input type="text" id="token" placeholder="optional">
+
+  <div class="row"><button class="b-primary" id="save">Save &amp; reconnect</button></div>
+  <div class="row">
+    <button class="b-soft" id="start">Start server</button>
+    <button class="b-warn" id="stop">Stop server</button>
+  </div>
+  <div class="row"><button class="b-soft" id="logs">View logs</button></div>
+
+  <div class="phone" id="phone">Phone URL: <i>start the server…</i></div>
+  <div class="msg" id="msg"></div>
+  <div class="hint">Click any text box on a page, then type from your phone. The floating bubble has the same controls.</div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

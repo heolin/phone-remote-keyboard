@@ -1,0 +1,39 @@
+{
+  "manifest_version": 3,
+  "name": "Phone Keyboard",
+  "version": "0.1.0",
+  "description": "Type into any input on your laptop from your phone over local WiFi.",
+  "permissions": ["storage", "tabs", "alarms", "nativeMessaging"],
+  "host_permissions": [
+    "ws://localhost/*",
+    "ws://127.0.0.1/*",
+    "http://localhost/*",
+    "http://127.0.0.1/*"
+  ],
+  "background": {
+    "service_worker": "background/sw.js"
+  },
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_title": "Phone Keyboard"
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content/protocol.js", "content/content.js"],
+      "run_at": "document_idle",
+      "all_frames": false
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["icons/keyboard.png"],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}
