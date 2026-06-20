@@ -8,7 +8,7 @@
     "name": "Wojciech Wlodarczyk",
     "email": "wlodarczyk.woj@gmail.com"
   },
-  "homepage": "https://github.com/wojciech/phone-keyboard",
+  "homepage": "https://github.com/heolin/phone-remote-keyboard",
   "main": "app/main.js",
   "bin": {
     "phone-keyboard": "server/index.js"
