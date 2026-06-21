@@ -31,10 +31,10 @@ function makeRelay() {
 function createWindow() {
   win = new BrowserWindow({
     width: 460,
-    height: 720,
-    resizable: true,
-    minWidth: 400,
-    minHeight: 560,
+    height: 520,
+    resizable: false,
+    maximizable: false,
+    fullscreenable: false,
     title: 'Phone Keyboard',
     icon: path.join(ASSETS, 'icon.png'),
     backgroundColor: '#f4f5fb',
