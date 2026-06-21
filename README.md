@@ -17,6 +17,11 @@ faster than reaching for the laptop.
 - 🖥️ A friendly **desktop app** (macOS + Linux) so non-technical users never
   touch a terminal.
 
+<p align="center">
+  <img src="docs/pk_demo.gif" alt="Typing into a laptop browser from a phone" width="720"><br>
+  <em><a href="docs/pk_demo.mp4">▶ watch the demo (mp4)</a></em>
+</p>
+
 ---
 
 ## How it works
@@ -60,6 +65,13 @@ Either way you get a **QR code** and a phone URL like
 `http://192.168.0.13:8787/?token=abc123`. (Terminal: change the port with
 `PK_PORT=9000 npm start`; the app has a port field.)
 
+<table>
+  <tr>
+    <td align="center"><img src="docs/app-stopped.png" alt="Desktop app, stopped" width="320"><br><sub>Stopped — click <b>Start</b></sub></td>
+    <td align="center"><img src="docs/app-running.png" alt="Desktop app, running with QR code" width="320"><br><sub>Running — scan the QR code</sub></td>
+  </tr>
+</table>
+
 ### 2. Load the Chrome extension (once)
 
 1. Go to `chrome://extensions`, enable **Developer mode**.
@@ -74,6 +86,10 @@ you run the server on a different port.
 
 Scan the QR code (same WiFi), or open the printed URL in your phone's browser.
 "Add to Home Screen" makes it feel like a native app.
+
+<p align="center">
+  <img src="docs/phone-app.png" alt="The phone web app — idle until you pick a field, with message history" width="320">
+</p>
 
 ## Using it
 
@@ -98,6 +114,13 @@ remembered. Click it to open the panel:
 The panel opens **below** the bubble when it sits in the top half of the screen,
 and **above** it when it sits in the bottom half. The toolbar **popup** exposes
 the same connection settings.
+
+<table>
+  <tr>
+    <td align="center"><img src="docs/bubble.png" alt="The in-page bubble, basic view" width="320"><br><sub>Basic view — status only</sub></td>
+    <td align="center"><img src="docs/bubble-settings.png" alt="The bubble with more settings expanded" width="320"><br><sub><b>more settings</b> — address, token, Phone URL</sub></td>
+  </tr>
+</table>
 
 ## Building the desktop app
 
