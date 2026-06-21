@@ -84,6 +84,21 @@ Scan the QR code (same WiFi), or open the printed URL in your phone's browser.
 4. **Star** messages you reuse; find them under **★ Starred** and resend in a tap.
 5. Click the **×** in the field (or on the phone) to release it.
 
+### The bubble
+
+The floating ⌨️ bubble is **draggable** — drop it anywhere; its position is
+remembered. Click it to open the panel:
+
+- The **header** has a minimal **on/off** switch (pause typing-from-phone without
+  removing the extension) and a **✕** to close the panel.
+- The panel shows the **connection status** (and how many phones are attached).
+- **more settings** reveals the **server address** (host / port), an optional
+  **token** for non-localhost servers, and **Save & reconnect**.
+
+The panel opens **below** the bubble when it sits in the top half of the screen,
+and **above** it when it sits in the bottom half. The toolbar **popup** exposes
+the same connection settings.
+
 ## Building the desktop app
 
 One Electron codebase (`app/`) packages for both macOS and Linux from the same
@@ -140,17 +155,6 @@ needs the *AppIndicator* extension — without it, just use the window. On some
 Linux setups dev launch needs `npx electron . --no-sandbox` (the packaged app
 handles this for you).
 
-## Optional: control the server from the bubble
-
-To use **Start/Stop server** and **View logs** directly from the in-page bubble
-(instead of the desktop app), install the native-messaging host once:
-
-```bash
-./native/install.sh <EXTENSION_ID>     # ID is on the chrome://extensions card
-```
-
-Fully quit and reopen Chrome afterwards.
-
 ## Project structure
 
 ```
@@ -159,7 +163,7 @@ phone-keyboard/
 ├── server/      Relay core (relay.js) + CLI (index.js): phone app, WS hub, /logs
 ├── extension/   Chrome MV3: floating bubble, input selection + sync, popup
 ├── mobile/      Phone web app (Preact, no build step)
-├── native/      Native-messaging host so the bubble can start/stop the server
+├── native/      Native-messaging host (legacy server start/stop; not wired to the current UI)
 └── shared/      Wire protocol shared by all parts
 ```
 

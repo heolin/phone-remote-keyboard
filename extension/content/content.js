@@ -15,6 +15,7 @@
   // ---- connection to the background service worker -------------------------
   let port = null;
   let state = { wsState: 'closed', presence: { phones: 0, exts: 0 }, config: {} };
+  let enabled = true; // whole-component on/off, mirrored from config.enabled
 
   function connectPort() {
     port = chrome.runtime.connect({ name: 'pk-content' });
@@ -41,7 +42,9 @@
   function onBgMessage(m) {
     if (m.evt === 'state') {
       state = m;
+      enabled = state.config.enabled !== false;
       renderStatus();
+      renderEnabled();
     } else if (m.evt === 'health') {
       onHealth(m);
     } else if (m.evt === 'msg') {
@@ -177,6 +180,7 @@
   document.addEventListener(
     'focusin',
     (e) => {
+      if (!enabled) return;
       const el = e.target;
       if (isEditable(el) && !isOurNode(el)) selectElement(el);
     },
@@ -279,11 +283,26 @@
       pointer-events: none; transition: opacity .16s ease, transform .16s ease;
     }
     .panel.open { opacity: 1; transform: scale(1) translateY(0); pointer-events: auto; }
-    .hdr { display:flex; align-items:center; justify-content:space-between; margin-bottom: 12px; }
-    .hdr b { font-size: 15px; }
+    .hdr { display:flex; align-items:center; gap:10px; margin-bottom: 12px; }
+    .title { font-size: 15px; font-weight: 700; flex: 1; }
+    /* minimalist on/off switch in the header */
+    .toggle { position:relative; flex:none; width:34px; height:18px; padding:0; border:0;
+      border-radius:999px; cursor:pointer; background:#cdd2e0; transition:background .15s; }
+    .toggle::after { content:""; position:absolute; top:2px; left:2px; width:14px; height:14px;
+      border-radius:50%; background:#fff; box-shadow:0 1px 2px rgba(0,0,0,.3); transition:transform .15s; }
+    .toggle.on { background:#27c093; }
+    .toggle.on::after { transform:translateX(16px); }
     .x { cursor:pointer; color:#9aa0b4; font-size:18px; line-height:1; }
+    .x:hover { color:#20223a; }
+    .basic { margin-bottom: 4px; }
+    .more { display:flex; align-items:center; justify-content:center; gap:6px; width:100%;
+      margin-top:8px; padding:6px; background:none; border:0; color:#9aa0b4; font-size:11px; cursor:pointer; }
+    .more:hover { color:#20223a; }
+    .more-ico { font-size:13px; }
+    .extra { display:none; margin-top:8px; padding-top:12px; border-top:1px solid #e2e4ee; }
+    .extra.open { display:block; }
     .status { display:flex; align-items:center; gap:8px; padding:8px 10px; border-radius:10px;
-              background:#f4f5fb; margin-bottom:12px; }
+              background:#f4f5fb; }
     .dot { width:10px; height:10px; border-radius:50%; background:var(--c,#f6c945);
            box-shadow:0 0 0 4px color-mix(in srgb, var(--c,#f6c945) 25%, transparent); }
     .status small { color:#6b7088; margin-left:auto; }
@@ -301,12 +320,11 @@
     }
     button:active { transform: scale(.97); }
     .b-primary { background: linear-gradient(135deg,#7c5cff,#5b8def); }
-    .b-soft { background:#eceeffe; color:#5b5fc7; background:#edeefc; }
-    .b-warn { background:#fff3f3; color:#d6455d; }
     button:hover { filter: brightness(1.04); }
     .phone { margin-top:12px; padding:10px; border-radius:10px; background:#f4f5fb; font-size:12px; word-break:break-all; }
     .phone a { color:#5b8def; text-decoration:none; }
     .msg { margin-top:10px; font-size:12px; color:#6b7088; min-height:14px; }
+    .msg:empty { margin-top:0; min-height:0; }
     .msg.err { color:#d6455d; }
     .hint { font-size:11px; color:#9aa0b4; margin-top:10px; }
   `;
@@ -332,24 +350,28 @@
     const panel = document.createElement('div');
     panel.className = 'panel';
     panel.innerHTML = `
-      <div class="hdr"><b>Phone Keyboard</b><span class="x" data-x>✕</span></div>
-      <div class="status"><span class="dot" data-dot></span><span data-stext>Disconnected</span><small data-pcount></small></div>
-      <label>Server address</label>
-      <div class="grid2">
-        <input type="text" data-host placeholder="127.0.0.1">
-        <input type="number" data-port placeholder="8787">
+      <div class="hdr">
+        <b class="title">Phone Keyboard</b>
+        <button class="toggle" data-toggle title="Turn off"></button>
+        <span class="x" data-x>✕</span>
       </div>
-      <label>Token (only if server is on another machine)</label>
-      <input type="text" data-token placeholder="optional">
-      <div class="row"><button class="b-primary" data-save>Save & reconnect</button></div>
-      <div class="row">
-        <button class="b-soft" data-start>Start server</button>
-        <button class="b-warn" data-stop>Stop server</button>
+      <div class="basic" data-basic>
+        <div class="status"><span class="dot" data-dot></span><span data-stext>Disconnected</span><small data-pcount></small></div>
       </div>
-      <div class="row"><button class="b-soft" data-logs>View logs</button></div>
-      <div class="phone" data-phone>Phone URL: <i>start the server…</i></div>
+      <button class="more" data-more><span class="more-ico">⚙</span> more settings</button>
+      <div class="extra" data-extra>
+        <label>Server address</label>
+        <div class="grid2">
+          <input type="text" data-host placeholder="127.0.0.1">
+          <input type="number" data-port placeholder="8787">
+        </div>
+        <label>Token (only if server is on another machine)</label>
+        <input type="text" data-token placeholder="optional">
+        <div class="row"><button class="b-primary" data-save>Save & reconnect</button></div>
+        <div class="phone" data-phone>Phone URL: <i>start the server…</i></div>
+        <div class="hint">Tip: click any text box on the page, then type from your phone.</div>
+      </div>
       <div class="msg" data-msg></div>
-      <div class="hint">Tip: click any text box on the page, then type from your phone.</div>
     `;
 
     shadow.appendChild(fab);
@@ -360,6 +382,9 @@
       fab,
       panel,
       ring: fab.querySelector('.ring'),
+      toggle: panel.querySelector('[data-toggle]'),
+      more: panel.querySelector('[data-more]'),
+      extra: panel.querySelector('[data-extra]'),
       dot: panel.querySelector('[data-dot]'),
       stext: panel.querySelector('[data-stext]'),
       pcount: panel.querySelector('[data-pcount]'),
@@ -372,6 +397,7 @@
 
     wireBubble(fab, panel);
     restorePosition(fab);
+    renderEnabled();
   }
 
   function wireBubble(fab, panel) {
@@ -416,6 +442,28 @@
     });
 
     panel.querySelector('[data-x]').addEventListener('click', () => closePanel());
+
+    // header on/off toggle drives the SW connect/disconnect (persists enabled)
+    refs.toggle.addEventListener('click', () => {
+      enabled = !enabled;
+      renderEnabled();
+      if (enabled) {
+        send('connect');
+      } else {
+        send('disconnect');
+        deselect();
+      }
+    });
+
+    // basic ⇄ extra settings
+    refs.more.addEventListener('click', () => {
+      const open = refs.extra.classList.toggle('open');
+      refs.more.innerHTML = open
+        ? '<span class="more-ico">⚙</span> less settings'
+        : '<span class="more-ico">⚙</span> more settings';
+      positionPanel();
+    });
+
     refs.host.value = '';
     panel.querySelector('[data-save]').addEventListener('click', () => {
       const cfg = {
@@ -427,15 +475,13 @@
       send('setConfig', { config: cfg });
       flash('Saved. Reconnecting…');
     });
-    panel.querySelector('[data-start]').addEventListener('click', () => {
-      flash('Starting server…');
-      send('nativeStart');
-    });
-    panel.querySelector('[data-stop]').addEventListener('click', () => {
-      flash('Stopping server…');
-      send('nativeStop');
-    });
-    panel.querySelector('[data-logs]').addEventListener('click', () => send('openLogs'));
+  }
+
+  function renderEnabled() {
+    if (!refs.toggle) return;
+    refs.toggle.classList.toggle('on', enabled);
+    refs.toggle.title = enabled ? 'Turn off' : 'Turn on';
+    refs.toggle.setAttribute('aria-pressed', String(enabled));
   }
 
   let panelOpen = false;
@@ -458,11 +504,12 @@
   }
   function positionPanel() {
     const r = refs.fab.getBoundingClientRect();
-    const pw = 300, ph = refs.panel.offsetHeight || 420;
-    let left = r.right - pw;
-    let top = r.top - ph - 10;
-    if (top < 8) top = r.bottom + 10;
-    left = Math.max(8, Math.min(left, window.innerWidth - pw - 8));
+    const GAP = 10, pw = 300, ph = refs.panel.offsetHeight || 420;
+    // Launcher in the top half → panel below it; bottom half → panel above it.
+    const below = r.top + r.height / 2 < window.innerHeight / 2;
+    let top = below ? r.bottom + GAP : r.top - ph - GAP;
+    top = Math.max(8, Math.min(top, window.innerHeight - ph - 8));
+    let left = Math.max(8, Math.min(r.right - pw, window.innerWidth - pw - 8));
     refs.panel.style.left = left + 'px';
     refs.panel.style.top = top + 'px';
   }

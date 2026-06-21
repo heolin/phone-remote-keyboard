@@ -13,10 +13,6 @@ port.onMessage.addListener((m) => {
     renderState(m);
   } else if (m.evt === 'health') {
     renderHealth(m);
-  } else if (m.evt === 'native') {
-    const r = m.result || {};
-    flash(r.ok ? r.message || `${m.action} ok` : r.error || `${m.action} failed`, !r.ok);
-    if (m.action === 'start') setTimeout(() => port.postMessage({ cmd: 'fetchHealth' }), 1000);
   }
 });
 
@@ -62,9 +58,6 @@ $('save').addEventListener('click', () => {
   });
   flash('Saved. Reconnecting…');
 });
-$('start').addEventListener('click', () => { flash('Starting server…'); port.postMessage({ cmd: 'nativeStart' }); });
-$('stop').addEventListener('click', () => { flash('Stopping server…'); port.postMessage({ cmd: 'nativeStop' }); });
-$('logs').addEventListener('click', () => port.postMessage({ cmd: 'openLogs' }));
 
 port.postMessage({ cmd: 'getState' });
 port.postMessage({ cmd: 'fetchHealth' });
