@@ -2,6 +2,10 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
+  <!-- Marks this as the Phone Keyboard phone app, so the desktop extension's
+       content script knows not to inject its bubble here (someone may open this
+       URL in a browser that has the extension installed). -->
+  <meta name="phone-keyboard-app" content="1">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
   <meta name="theme-color" content="#7c5cff">
   <meta name="mobile-web-app-capable" content="yes">

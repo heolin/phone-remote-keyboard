@@ -90,7 +90,9 @@ function App() {
     onText: (v) => { if (!typingRef.current) setText(v); },
     onTarget: (t) => {
       setTarget(t);
-      if (t) setText(t.value);
+      // On focus, mirror the field's current value; on blur (input disabled),
+      // clear the box so stale text doesn't linger.
+      setText(t ? t.value : '');
     },
   });
 
@@ -169,11 +171,12 @@ function App() {
         placeholder=${target ? 'Type here — it appears on your laptop instantly' : 'Waiting for a text box…'}
         value=${text}
         onInput=${onInput}
+        disabled=${!target}
       ></textarea>
 
       <div class="actions">
-        <button class="btn ghost" title="Clear" onClick=${() => { setText(''); relay.send({ type: MSG.TEXT_UPDATE, value: '', origin: 'phone' }); }}>✕</button>
-        <button class="btn" disabled=${relay.status !== 'open'} onClick=${() => sendMessage()}>Send ⏎</button>
+        <button class="btn ghost" title="Clear" disabled=${!target} onClick=${() => { setText(''); relay.send({ type: MSG.TEXT_UPDATE, value: '', origin: 'phone' }); }}>✕</button>
+        <button class="btn" disabled=${relay.status !== 'open' || !target} onClick=${() => sendMessage()}>Send ⏎</button>
       </div>
     </div>
 

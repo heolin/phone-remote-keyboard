@@ -8,6 +8,12 @@
  */
 (function () {
   if (window.__pkContentLoaded) return;
+
+  // Don't run on the Phone Keyboard phone app itself. That page is served by the
+  // relay and carries this marker; if it's opened in a desktop browser that has
+  // this extension installed, we must not inject the bubble or hijack its inputs.
+  if (document.querySelector('meta[name="phone-keyboard-app"]')) return;
+
   window.__pkContentLoaded = true;
 
   const { MSG } = window.PK_PROTOCOL;
@@ -61,6 +67,7 @@
   let lastSentValue = null;
   let syncTimer = null;
   let prevOutline = null; // saved inline outline of the highlighted field
+  let suspended = false;  // tab hidden: selection kept but overlay hidden, phone not driven
 
   // Visually mark the field that's under phone control. We stash the field's
   // own inline outline first so we can restore it exactly on deselect.
@@ -145,18 +152,18 @@
     el.addEventListener('input', onLocalInput);
   }
 
-  function deselect() {
+  function deselect(notify = true) {
     if (!activeEl) return;
     clearHighlight();
     activeEl.removeEventListener('input', onLocalInput);
     activeEl = null;
     lastSentValue = null;
     hideDeselect();
-    wsSend({ type: MSG.INPUT_BLUR });
+    if (notify) wsSend({ type: MSG.INPUT_BLUR });
   }
 
   function onLocalInput() {
-    if (!activeEl) return;
+    if (!activeEl || suspended) return;
     clearTimeout(syncTimer);
     syncTimer = setTimeout(() => {
       const v = getValue(activeEl);
@@ -186,6 +193,45 @@
     },
     true
   );
+
+  // A reload, navigation, or form submit (e.g. a search box redirecting to
+  // Google) destroys the selected field. Tell the phone so it stops typing into
+  // a target that no longer exists. 'pagehide' fires for reloads, link clicks,
+  // and back/forward — more reliably than 'beforeunload'.
+  window.addEventListener('pagehide', () => {
+    if (activeEl) deselect();
+  });
+
+  // Only the tab the user is looking at drives the phone, but a hidden tab keeps
+  // its selection so returning to it just works (no re-click). On hide we
+  // "suspend": keep activeEl but hide the overlay and stop driving the phone. On
+  // show we "resume": restore the overlay and re-claim the phone by re-sending
+  // focus — this also self-heals any stale state from a missed event.
+  function suspendSelection() {
+    if (!activeEl || suspended) return;
+    suspended = true;
+    clearHighlight();
+    hideDeselect();
+    // keep activeEl + its input listener; don't blur the phone here
+  }
+  function resumeSelection() {
+    if (activeEl && suspended) {
+      suspended = false;
+      applyHighlight(activeEl);
+      showDeselect();
+      positionDeselect();
+      // Re-claim the phone for this tab's field (sets it as the active target).
+      lastSentValue = getValue(activeEl);
+      wsSend({ type: MSG.INPUT_FOCUS, value: lastSentValue, label: labelFor(activeEl) });
+    } else if (!activeEl) {
+      // Visible tab has nothing selected — make sure the phone shows no target.
+      wsSend({ type: MSG.INPUT_BLUR });
+    }
+  }
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) suspendSelection();
+    else resumeSelection();
+  });
 
   // ---- the small "deselect" tag pinned to the active input -----------------
   let deselectEl = null;
