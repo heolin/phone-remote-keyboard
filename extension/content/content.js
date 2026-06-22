@@ -55,8 +55,6 @@
       onHealth(m);
     } else if (m.evt === 'msg') {
       onServerMessage(m.msg);
-    } else if (m.evt === 'native') {
-      onNativeResult(m);
     }
   }
 
@@ -582,13 +580,6 @@
     } else {
       refs.phone.innerHTML = 'Phone URL: <i>server not reachable</i>';
     }
-  }
-
-  function onNativeResult(m) {
-    const r = m.result || {};
-    if (r.ok) flash(r.message || `${m.action} ok`);
-    else flash(r.error || `${m.action} failed`, true);
-    if (m.action === 'start') setTimeout(() => send('fetchHealth'), 1000);
   }
 
   let flashTimer = null;

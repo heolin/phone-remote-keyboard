@@ -91,12 +91,6 @@ The dashboard asks for a justification per **manifest-declared** permission.
   input-sync must work in any text box, on any site the user chooses to type
   into.
 
-> ⚠️ **Before publishing:** `manifest.json` also declares **`nativeMessaging`**,
-> but the README notes the native-messaging host is legacy and **not wired to the
-> current UI**. Reviewers reject permissions that aren't exercised — remove
-> `nativeMessaging` from the manifest unless it is actually used, otherwise be
-> ready to justify it.
-
 ## Remote code
 
 Answer: **No.** All JS is bundled in the package — no external `<script>` URLs,

@@ -3,7 +3,6 @@
  * Owns ONE WebSocket to the local relay server (as role=ext) and bridges it to:
  *   - content scripts (the bubble + input sync) via long-lived ports
  *   - the toolbar popup via long-lived ports
- *   - a native-messaging host that can start/stop the server process
  *
  * Why the WS lives here and not in the content script: a content script shares
  * the page's security context, so an https page would block an insecure ws://
@@ -14,7 +13,6 @@
 importScripts('/content/protocol.js');
 const { ROLE, MSG } = self.PK_PROTOCOL;
 
-const NATIVE_HOST = 'com.phonekeyboard.host';
 const DEFAULT_CONFIG = { host: '127.0.0.1', port: 8787, token: '', enabled: true };
 
 let config = { ...DEFAULT_CONFIG };
@@ -130,40 +128,6 @@ function safePost(port, payload) {
   }
 }
 
-// --- native messaging (start/stop the server process) -----------------------
-function native(message) {
-  return new Promise((resolve) => {
-    let settled = false;
-    let port;
-    try {
-      port = chrome.runtime.connectNative(NATIVE_HOST);
-    } catch (e) {
-      resolve({ ok: false, error: 'native host not available' });
-      return;
-    }
-    port.onMessage.addListener((resp) => {
-      settled = true;
-      resolve({ ok: true, ...resp });
-      try {
-        port.disconnect();
-      } catch {
-        /* noop */
-      }
-    });
-    port.onDisconnect.addListener(() => {
-      if (!settled) {
-        const err = chrome.runtime.lastError;
-        resolve({ ok: false, error: (err && err.message) || 'native host disconnected (not installed?)' });
-      }
-    });
-    try {
-      port.postMessage(message);
-    } catch (e) {
-      resolve({ ok: false, error: String(e) });
-    }
-  });
-}
-
 // --- port handling ----------------------------------------------------------
 chrome.runtime.onConnect.addListener((port) => {
   if (port.name === 'pk-content') {
@@ -248,25 +212,6 @@ async function handleCommon(m, replyPort) {
     case 'openLogs':
       chrome.tabs.create({ url: `http://${config.host}:${config.port}/logs` });
       break;
-    case 'nativeStart': {
-      const r = await native({ cmd: 'start', port: config.port });
-      if (replyPort) safePost(replyPort, { evt: 'native', action: 'start', result: r });
-      else broadcast({ evt: 'native', action: 'start', result: r });
-      setTimeout(connect, 800);
-      break;
-    }
-    case 'nativeStop': {
-      const r = await native({ cmd: 'stop' });
-      if (replyPort) safePost(replyPort, { evt: 'native', action: 'stop', result: r });
-      else broadcast({ evt: 'native', action: 'stop', result: r });
-      break;
-    }
-    case 'nativeStatus': {
-      const r = await native({ cmd: 'status' });
-      if (replyPort) safePost(replyPort, { evt: 'native', action: 'status', result: r });
-      else broadcast({ evt: 'native', action: 'status', result: r });
-      break;
-    }
   }
 }
 
