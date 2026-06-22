@@ -29,10 +29,9 @@ faster than reaching for the laptop.
 A Chrome extension can't host a server, so the project is three small parts that
 talk over WebSockets:
 
-```
-  Phone (web app)  <--WS-->  Local relay server  <--WS-->  Chrome extension
-   types text                 (on the laptop)              (bubble + input sync)
-```
+<p align="center">
+  <img src="docs/architecture.svg" alt="Architecture: phone web app and Chrome extension both connect over WebSockets to a local relay server on the laptop" width="720">
+</p>
 
 The **server** is just a relay hub on the laptop; the phone and the extension are
 both clients of it. The extension always connects to `127.0.0.1` (localhost is
