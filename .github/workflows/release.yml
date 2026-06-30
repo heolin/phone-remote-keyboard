@@ -37,15 +37,16 @@ jobs:
 
       - name: Build desktop app (macOS, x64 + arm64 dmg)
         if: matrix.artifact == 'macos'
-        run: npx electron-builder --mac dmg --x64 --arm64
+        # --publish never: just build. The separate `release` job below
+        # creates the draft Release from the uploaded artifacts.
+        run: npx electron-builder --mac dmg --x64 --arm64 --publish never
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           # Unsigned build — don't try to auto-discover a signing identity on CI.
           CSC_IDENTITY_AUTO_DISCOVERY: 'false'
 
       - name: Build desktop app (Linux AppImage + deb)
         if: matrix.artifact == 'linux'
-        run: npx electron-builder --linux AppImage deb
+        run: npx electron-builder --linux AppImage deb --publish never
 
       - name: Build Chrome extension zip
         if: matrix.artifact == 'linux'
