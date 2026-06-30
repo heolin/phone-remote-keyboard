@@ -1,6 +1,6 @@
 {
   "name": "phone-keyboard",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "private": true,
   "description": "Type into your laptop's browser from your phone over local WiFi. Built to help one-handed laptop use.",
   "type": "commonjs",
