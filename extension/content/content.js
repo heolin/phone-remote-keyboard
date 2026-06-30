@@ -369,7 +369,7 @@
     button:hover { filter: brightness(1.04); }
     .phone { margin-top:12px; padding:10px; border-radius:10px; background:#f4f5fb; font-size:12px; word-break:break-all; }
     .phone a { color:#5b8def; text-decoration:none; }
-    .notice { display:none; text-decoration:none; margin-top:10px; padding:9px 11px;
+    .notice { display:none; text-decoration:none; text-align:center; margin-top:10px; padding:9px 11px;
               border-radius:10px; background:#fff7ed; border:1px solid #ffe2c2;
               color:#b4530f; font-size:12px; line-height:1.4; }
     .notice.show { display:block; }
@@ -411,7 +411,7 @@
         <div class="status"><span class="dot" data-dot></span><span data-stext>Disconnected</span><small data-pcount></small></div>
         <a class="notice" data-dlnotice
            href="https://github.com/heolin/phone-remote-keyboard/releases"
-           target="_blank" rel="noopener">Desktop app not running. <b>Download or update it →</b></a>
+           target="_blank" rel="noopener"><b>Download the app</b></a>
       </div>
       <button class="more" data-more><span class="more-ico">⚙</span> more settings</button>
       <div class="extra" data-extra>

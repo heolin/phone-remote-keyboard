@@ -53,6 +53,11 @@ WHAT YOU NEED
 • The relay server running on the laptop — either the desktop app (one click to
   start) or via Node.js from the terminal.
 
+GET THE DESKTOP APP
+Download the latest macOS or Linux build — or update an existing one — from the
+releases page:
+https://github.com/heolin/phone-remote-keyboard/releases
+
 PRIVACY
 • No data leaves your network. There is no cloud component and no analytics.
 • LAN clients (your phone) must present a token, embedded in the QR/URL — keep

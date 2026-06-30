@@ -11,8 +11,8 @@
       color: #20223a; background: #fff;
     }
     h1 { font-size: 15px; margin: 0 0 12px; display:flex; align-items:center; gap:8px; }
-    h1 .logo { width:30px; height:30px; border-radius:9px; border:1px solid #dfecff;
-               background: radial-gradient(circle at 50% 35%, #8fbcff 0%, #4a8df0 100%);
+    h1 .logo { width:30px; height:30px; border-radius:9px; border:1px solid #e7defc;
+               background: radial-gradient(circle at 50% 35%, #a78bff 0%, #6d4af0 100%);
                display:grid; place-items:center; }
     h1 .logo .ico { width:18px; height:18px; background-color:#fff;
                     -webkit-mask:url(../icons/keyboard.png) center/contain no-repeat;
@@ -26,7 +26,7 @@
     .switch .track::after { content:""; position:absolute; top:2px; left:2px; width:18px; height:18px;
                             border-radius:50%; background:#fff; box-shadow:0 1px 2px rgba(0,0,0,.2);
                             transition: transform .15s; }
-    .switch.on .track { background:#4a8df0; }
+    .switch.on .track { background:#7c5cff; }
     .switch.on .track::after { transform: translateX(16px); }
     .off-dim { opacity:.45; pointer-events:none; }
     .status { display:flex; align-items:center; gap:8px; padding:8px 10px; border-radius:10px;
@@ -49,7 +49,7 @@
     .phone a { color:#5b8def; cursor:pointer; }
     .msg { margin-top:10px; font-size:12px; color:#6b7088; min-height:14px; }
     .msg.err { color:#d6455d; }
-    .notice { display:none; text-decoration:none; margin-bottom:12px; padding:9px 11px;
+    .notice { display:none; text-decoration:none; text-align:center; margin-bottom:12px; padding:9px 11px;
               border-radius:10px; background:#fff7ed; border:1px solid #ffe2c2;
               color:#b4530f; font-size:12px; line-height:1.4; }
     .notice.show { display:block; }
@@ -76,9 +76,7 @@
 
   <a class="notice" id="dlNotice"
      href="https://github.com/heolin/phone-remote-keyboard/releases"
-     target="_blank" rel="noopener">
-    Desktop app not running. <b>Download or update it →</b>
-  </a>
+     target="_blank" rel="noopener"><b>Download the app</b></a>
 
   <label>Server address</label>
   <div class="grid2">
