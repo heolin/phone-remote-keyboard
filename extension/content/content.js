@@ -48,7 +48,9 @@
   function onBgMessage(m) {
     if (m.evt === 'state') {
       state = m;
+      const wasEnabled = enabled;
       enabled = state.config.enabled !== false;
+      if (wasEnabled && !enabled) deselect(); // disabled elsewhere (popup) → drop the field
       renderStatus();
       renderEnabled();
     } else if (m.evt === 'health') {
@@ -522,6 +524,9 @@
   }
 
   function renderEnabled() {
+    // Master switch: when off, the whole bubble disappears (the SW is already
+    // disconnected). Re-enable from the toolbar settings popup.
+    if (hostEl) hostEl.style.display = enabled ? '' : 'none';
     if (!refs.toggle) return;
     refs.toggle.classList.toggle('on', enabled);
     refs.toggle.title = enabled ? 'Turn off' : 'Turn on';

@@ -1,0 +1,107 @@
+name: Release
+
+# Push a tag like v0.2.0 to build the desktop app (macOS + Linux) and the
+# Chrome extension zip, then publish them to a GitHub Release.
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build (${{ matrix.artifact }})
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: macos-latest
+            artifact: macos
+          - os: ubuntu-latest
+            artifact: linux
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+
+      - name: Run tests
+        run: npm test
+
+      - name: Build desktop app (macOS, x64 + arm64 dmg)
+        if: matrix.artifact == 'macos'
+        run: npx electron-builder --mac dmg --x64 --arm64
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Unsigned build — don't try to auto-discover a signing identity on CI.
+          CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+
+      - name: Build desktop app (Linux AppImage + deb)
+        if: matrix.artifact == 'linux'
+        run: npx electron-builder --linux AppImage deb
+
+      - name: Build Chrome extension zip
+        if: matrix.artifact == 'linux'
+        run: ./extension/make-zip.sh
+
+      - name: Collect release artifacts
+        run: |
+          mkdir -p out
+          find dist -maxdepth 1 -type f \
+            \( -name '*.dmg' -o -name '*.AppImage' -o -name '*.deb' \) -exec cp {} out/ \;
+          if [ -d extension/dist ]; then
+            find extension/dist -maxdepth 1 -name '*.zip' -exec cp {} out/ \;
+          fi
+          ls -la out
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact }}
+          path: out/*
+          if-no-files-found: error
+
+  release:
+    name: Publish GitHub Release
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Flatten artifacts
+        run: |
+          mkdir -p release
+          find artifacts -type f -exec cp {} release/ \;
+          ls -la release
+
+      - name: Create GitHub Release (draft)
+        uses: softprops/action-gh-release@v2
+        with:
+          # Created as a DRAFT — review the assets, then publish from the
+          # GitHub Releases page.
+          draft: true
+          name: Phone Keyboard ${{ github.ref_name }}
+          files: release/*
+          body: |
+            ## Phone Keyboard ${{ github.ref_name }}
+
+            Type into your laptop's browser from your phone over local WiFi.
+
+            ### What's new
+            - **Toolbar settings popup** — click the extension icon to open settings (server address, token) without going through the on-page bubble.
+            - **Master enable/disable switch** — turning Phone Keyboard off now disconnects the WebSocket *and* hides the floating bubble entirely. Turn it back on from the toolbar popup.
+
+            ### Downloads
+            - **macOS** — `PhoneKeyboard-*.dmg` (separate x64 and arm64 builds; unsigned, so right-click → Open on first launch)
+            - **Linux** — `PhoneKeyboard-*.AppImage` or `phone-keyboard_*_amd64.deb`
+            - **Chrome extension** — `phone-keyboard-extension-*.zip` (also on the Chrome Web Store)
+
+            See the [README](https://github.com/heolin/phone-remote-keyboard#readme) for setup.

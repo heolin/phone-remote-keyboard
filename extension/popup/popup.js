@@ -17,6 +17,9 @@ port.onMessage.addListener((m) => {
 });
 
 function renderState(m) {
+  const enabled = cfg.enabled !== false;
+  $('enabledSwitch').classList.toggle('on', enabled);
+  $('body').classList.toggle('off-dim', !enabled);
   const c = COLORS[m.wsState] || COLORS.closed;
   $('dot').style.setProperty('--c', c);
   $('stext').textContent = LABEL[m.wsState] || 'Disconnected';
@@ -45,6 +48,13 @@ function flash(text, isErr) {
   clearTimeout(msgTimer);
   msgTimer = setTimeout(() => ($('msg').textContent = ''), 4000);
 }
+
+$('enabledSwitch').addEventListener('click', () => {
+  const turningOn = cfg.enabled === false;
+  // SW persists enabled and (dis)connects; it broadcasts new state back to us.
+  port.postMessage({ cmd: turningOn ? 'connect' : 'disconnect' });
+  flash(turningOn ? 'Enabled' : 'Disabled');
+});
 
 $('save').addEventListener('click', () => {
   port.postMessage({
