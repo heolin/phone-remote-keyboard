@@ -23,6 +23,9 @@ function renderState(m) {
   const c = COLORS[m.wsState] || COLORS.closed;
   $('dot').style.setProperty('--c', c);
   $('stext').textContent = LABEL[m.wsState] || 'Disconnected';
+  // Enabled but can't reach the server → the desktop app probably isn't
+  // installed/running. Point the user at the releases page.
+  $('dlNotice').classList.toggle('show', enabled && m.wsState === 'closed');
   const phones = (m.presence && m.presence.phones) || 0;
   $('pcount').textContent = phones ? `${phones} phone${phones > 1 ? 's' : ''}` : 'no phone';
   if (document.activeElement !== $('host')) $('host').value = cfg.host || '127.0.0.1';
